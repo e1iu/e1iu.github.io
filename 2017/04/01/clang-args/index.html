@@ -1,0 +1,44 @@
+<html>
+<head>
+	
+	<title>利用函数参数地址寻址的问题</title>
+	<meta name="keywords" content="My Blog, Spider Bitch!" />
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    
+    <!--<link rel="stylesheet" href="/css/main.css">-->
+	<link href="/css/main.css?v=2" rel="stylesheet" type="text/css" />
+    <!--<link rel="stylesheet" href="/css/style.css">-->
+    
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+
+    
+	<link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=2"/>
+    
+
+</head>
+
+<body>
+
+<h3 id="利用函数参数地址寻址的问题"><a href="#利用函数参数地址寻址的问题" class="headerlink" title="利用函数参数地址寻址的问题"></a>利用函数参数地址寻址的问题</h3><p>之前在用Ｃ语言编程的时候，有些时候会利用stack的布局做一些操作．我之前在实现垃圾收集器算法的时候就会使用函数参数的地址，用这个地址作为基址在stack上寻找我想要的数据．<a href="http://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html" target="_blank" rel="external">这篇文章</a>里面详细介绍了stack的布局，以及编译器在编译函数时自动产生的前言和结语等问题．</p>
+<p>对这个垃圾收集算法感兴趣的可以看<a href="https://github.com/qc1iu/tiger-comp/blob/master/src/main/runtime/gc.c" target="_blank" rel="external">这里</a>．我在写这个算法的时候就发现当使用clang编译器编译后，函数参数在stack中的布局跟预期的不一样．<a href="https://segmentfault.com/q/1010000003486026" target="_blank" rel="external">这是sf上提出的一个问题</a>．</p>
+<p>后来在工作中涉及到了不少关于stack balance的问题，其中有些需求让我不得不读反编译后的代码．</p>
+<p>对于这样一个函数<br><figure class="highlight c"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div></pre></td><td class="code"><pre><div class="line"><span class="function"><span class="keyword">int</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> a, <span class="keyword">int</span> b)</span></span></div><div class="line">&#123;</div><div class="line">    <span class="keyword">return</span> a + b;</div><div class="line">&#125;</div></pre></td></tr></table></figure></p>
+<p>其用clang编译后，反编译结果如下</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div></pre></td><td class="code"><pre><div class="line">080483c0 &lt;add&gt;:</div><div class="line"> 80483c0:   55                      push   %ebp</div><div class="line"> 80483c1:   89 e5                   mov    %esp,%ebp</div><div class="line"> 80483c3:   83 ec 08                sub    $0x8,%esp</div><div class="line"> 80483c6:   8b 45 0c                mov    0xc(%ebp),%eax</div><div class="line"> 80483c9:   8b 4d 08                mov    0x8(%ebp),%ecx</div><div class="line"> 80483cc:   89 4d fc                mov    %ecx,-0x4(%ebp)</div><div class="line"> 80483cf:   89 45 f8                mov    %eax,-0x8(%ebp)</div><div class="line"> 80483d2:   8b 45 fc                mov    -0x4(%ebp),%eax</div><div class="line"> 80483d5:   03 45 f8                add    -0x8(%ebp),%eax</div><div class="line"> 80483d8:   83 c4 08                add    $0x8,%esp</div><div class="line"> 80483db:   5d                      pop    %ebp</div><div class="line"> 80483dc:   c3                      ret</div><div class="line"></div><div class="line"> 80483dd:   0f 1f 00                nopl   (%eax)</div></pre></td></tr></table></figure>
+<p>可以看到中间有４句mov指令做了stack拷贝操作．拷贝后stack布局变成</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><div class="line">1</div><div class="line">2</div><div class="line">3</div><div class="line">4</div><div class="line">5</div><div class="line">6</div><div class="line">7</div><div class="line">8</div><div class="line">9</div><div class="line">10</div><div class="line">11</div><div class="line">12</div><div class="line">13</div><div class="line">14</div><div class="line">15</div><div class="line">16</div><div class="line">17</div></pre></td><td class="code"><pre><div class="line">+---------+</div><div class="line">|high     |</div><div class="line">+---------+</div><div class="line">|101      |&lt;-arg2</div><div class="line">+---------+</div><div class="line">|99       |&lt;-arg1</div><div class="line">+---------+</div><div class="line">|ret      |</div><div class="line">+---------+</div><div class="line">|ebp      |</div><div class="line">+---------+</div><div class="line">|99       |&lt;-a</div><div class="line">+---------+</div><div class="line">|101      |&lt;-b</div><div class="line">+---------+</div><div class="line">|low      |</div><div class="line">+---------+</div></pre></td></tr></table></figure>
+<p>这一步拷贝操作导致用参数的地址作为质址来寻址会遇出错．当时在实现垃圾收集算法的时候还以为clang的参数计算顺序问题，或者是ABI的问题，现在看来还是图样．</p>
+<p>回过头来看这个问题，clang这么做在效率上会有损失，但是的确是符合逻辑的．这样的一个参数拷贝操作之后，使得函数的参数都在自己的frame当中，而不像之前一样，函数的参数在其caller的frame中．</p>
+<p>这个问题也说明，利用函数参数地址来进行stack上的寻址操作是有潜在风险的．</p>
+
+
+
+
+
+
+</body>
+</html>
