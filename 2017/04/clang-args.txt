@@ -9,12 +9,12 @@
 
 之前在用Ｃ语言编程的时候，有些时候会利用stack的布局做一些操作．我之前在
 实现垃圾收集器算法的时候就会使用函数参数的地址，用这个地址作为基址在
-stack上寻找我想要的数据．[&0] 里面详细介绍了stack的布局，以及编译器在编
-译函数时自动产生的前言和结语等问题．
+stack上寻找我想要的数据．[0] 里面详细介绍了stack的布局，以及编译器在编译
+函数时自动产生的前言和结语等问题．
 
-对这个垃圾收集算法感兴趣的可以看[&1] ．我在写这个算法的时候就发现当使用
+对这个垃圾收集算法感兴趣的可以看[1] ．我在写这个算法的时候就发现当使用
 clang编译器编译后，函数参数在stack中的布局跟预期的不一样．这是sf上提出的
-一个问题[&2]．
+一个问题[2]．
 
 后来在工作中涉及到了不少关于stack balance的问题，其中有些需求让我不得不
 读反编译后的代码．
@@ -78,9 +78,8 @@ clang编译器编译后，函数参数在stack中的布局跟预期的不一样�
 这个问题也说明，利用函数参数地址来进行stack上的寻址操作是有潜在风险的．
 
 
-[&0] http://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html
+[0] http://www.tenouk.com/Bufferoverflowc/Bufferoverflow2a.html
 
-[&1]
-https://github.com/qc1iu/tiger-comp/blob/master/src/main/runtime/gc.
+[1] https://github.com/qc1iu/tiger-comp/blob/master/src/main/runtime/gc.
 
-[&2] https://segmentfault.com/q/1010000003486026
+[2] https://segmentfault.com/q/1010000003486026

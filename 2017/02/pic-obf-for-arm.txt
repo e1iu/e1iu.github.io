@@ -8,7 +8,7 @@
 
 
 对编译器已经生成的PIC代码进行混淆，其实还是很有意思的。关于什么是PIC代码
-可以看这里[&0 ]。我用ARM架构的thumb指令集来举例子。PIC代码与普通代码不同
+可以看这里[0] 。我用ARM架构的thumb指令集来举例子。PIC代码与普通代码不同
 的地方在于，其代码中有很多是相对寻址。比如：
 ,----
 | 0x00    ldr r1, [pc, #4]    ①
@@ -58,4 +58,4 @@
 其中语句④即为移位前后pc的δ。⑦用于修复r1的值。
 
 
-[&0 ] https://en.wikipedia.org/wiki/Position-independent_code
+[0] https://en.wikipedia.org/wiki/Position-independent_code
