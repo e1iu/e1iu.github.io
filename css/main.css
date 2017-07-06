@@ -1,13 +1,23 @@
 body {
     font-family:"lucida grande", "lucida sans unicode", lucida, helvetica, "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Micro Hei", sans-serif;
-    font-size: 18px;
+    font-size: 16px;
     margin: 2% 5% 2% 5%;
     padding: 2% 8% 5% 8%;
-    border: 6px solid LightGrey;
+    border-top-width: 6px;
+    border-top-style: solid;
+    border-top-color: LightGrey;
+    border-right-width: 6px;
+    border-right-style: solid;
+    border-right-color: LightGrey;
+    border-left-width: 6px;
+    border-left-style: solid;
+    border-left-color: LightGrey;
+    border-bottom-width: 6px;
+    border-bottom-style: solid;
+    border-bottom-color: LightGrey;
 }
 
 P {
-    font-size: 16px;
     line-height: 1.6;
 }
 
@@ -82,7 +92,7 @@ code {
 
 
 a {
-    text-decoration: none;
+    text-decoration-line: none;
     cursor: crosshair;
     border-bottom: 1px dashed orange;
     color: #930ee4;
