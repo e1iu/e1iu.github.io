@@ -3685,6 +3685,7 @@ button.discussion-sidebar-toggle {
 }
 
 .gh-header-title {
+    margin-top: 5%;
     margin-right: 150px;
     margin-bottom: 0;
     font-weight: normal;
@@ -26822,7 +26823,9 @@ ul.clones li {
 }
 
 .wiki-body {
-    margin-top: 20px
+    margin-bottom: 5%;
+    padding: 2% 8% 5% 8%;
+    border: 2px solid LightGrey;
 }
 
 .wiki-body .markdown-body {
