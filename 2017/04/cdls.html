@@ -7,22 +7,33 @@
     <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <link href="../../css/main.css" rel="stylesheet" type="text/css"/>
+    <link href="../../css/mystyle.css" rel="stylesheet" type="text/css"/>
+
     <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
     <link rel="shortcut icon" type="image/x-icon" href="/Q.ico"/>
 
 </head>
 
 <body>
-<h2>cd后自动ls</h2>
-<p>我的系统是Ubuntu16.04，使用终端的时候我有一个习惯，就是cd后一定要ls -l，
-    不然难受。后来想干脆将这个写到.bashrc里面。
-</p>
-<p>后来在工作中涉及到了不少关于stack balance的问题，其中有些需求让我不得不
-    读反编译后的代码．
-</p>
+<div class="container">
+    <h1 class="gh-header-title">cd后自动ls</h1>
+    <div class="gh-header-meta">
+        <a href="https://github.com/qc1iu">qc1iu</a> published this page
+        <time>Apr 1, 2017</time>&middot;
+        Last modified:
+        <time>Jul 19, 2017</time>
+    </div>
 
-<pre>
+
+    <div class="markdown-body">
+        <p>我的系统是Ubuntu16.04，使用终端的时候我有一个习惯，就是cd后一定要ls -l，
+            不然难受。后来想干脆将这个写到.bashrc里面。
+        </p>
+        <p>后来在工作中涉及到了不少关于stack balance的问题，其中有些需求让我不得不
+            读反编译后的代码．
+        </p>
+
+        <pre>
  cdls() {
    if [ ! ${1} ]; then
      cdls ~/;
@@ -34,13 +45,15 @@
  alias cd='cdls'
 </pre>
 
-<p>这样cd后会自动ls -l，列出当前的文件夹下的文件。这样就与用GUI操作保持了一
-    致。因为在图形界面中，每打开一个目录它自动的会显示里面的文件。因此从一致
-    的角度看这么做没什么毛病。有人提出过这样一个问题，说如果文件过多的话列出
-    当前的所有文件可用性比较差。在我看来，图形界面操作也面临同样的问题。
-</p>
+        <p>这样cd后会自动ls -l，列出当前的文件夹下的文件。这样就与用GUI操作保持了一
+            致。因为在图形界面中，每打开一个目录它自动的会显示里面的文件。因此从一致
+            的角度看这么做没什么毛病。有人提出过这样一个问题，说如果文件过多的话列出
+            当前的所有文件可用性比较差。在我看来，图形界面操作也面临同样的问题。
+        </p>
 
-<p>最大的问题是，现在我还是克制不住敲完cd打一个ls -l……需要适应一下。</p>
+        <p>最大的问题是，现在
+    </div>
+</div>
 
 </body>
 </html>
