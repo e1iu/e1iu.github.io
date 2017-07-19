@@ -42,6 +42,18 @@
     word-wrap: break-word
 }
 
+.markdown-body a {
+    text-decoration-line: none;
+    cursor: crosshair;
+    border-bottom: 1px dashed orange;
+    color: #930ee4;
+}
+
+
+.markdown-body a:hover {
+    background-color: LightGrey;
+}
+
 .markdown-body::before {
     display: table;
     content: ""
