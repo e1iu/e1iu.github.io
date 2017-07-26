@@ -1,0 +1,73 @@
+table.calendar {
+    font-family: arial, helvetica;
+    font-size: 10pt;
+    empty-cells: show;
+    border: 1px solid #000000;
+    border-collapse: collapse;
+}
+
+table.calendar tr td {
+    border: 1px solid #aaaaaa;
+}
+
+table.calendar tr {
+    vertical-align: center;
+    height: 3em;
+    background: #eeeeee;
+}
+
+table.calendar thead tr {
+    text-align: center;
+    background: #444444;
+    color: #ffffff;
+    height: auto;
+    font-weight: bold;
+}
+
+.lecture {
+    background: #ffffaa;
+}
+
+.recitation {
+    background: #cccc99;
+}
+
+.tutorial {
+    background: #dddd55;
+}
+
+.quiz {
+    background: #ff9900;
+}
+
+.holiday {
+    background: #ccffcc;
+}
+
+.special {
+    background: #aaaaff;
+}
+
+.important {
+    background: #ffaaaa;
+}
+
+.reading {
+    color: #3333ff;
+}
+
+.deadline {
+    color: #ff0000;
+}
+
+.assignment {
+    color: #0aa00a;
+}
+
+.date {
+    color: #444444;
+}
+
+.due {
+    background: #ffaaaa;
+}
