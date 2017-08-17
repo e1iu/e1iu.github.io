@@ -1,0 +1,163 @@
+<html>
+<head>
+
+    <title>NAT</title>
+    <meta name="keywords" content="My Blog, Spider Bitch!"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="../../css/mystyle.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+    <link rel="shortcut icon" type="image/x-icon" href="/Q.ico"/>
+    <script>
+        (function (i, s, o, g, r, a, m) {
+            i['GoogleAnalyticsObject'] = r;
+            i[r] = i[r] || function () {
+                (i[r].q = i[r].q || []).push(arguments)
+            }, i[r].l = 1 * new Date();
+            a = s.createElement(o),
+                m = s.getElementsByTagName(o)[0];
+            a.async = 1;
+            a.src = g;
+            m.parentNode.insertBefore(a, m)
+        })(window, document, 'script', 'https://www.google-analytics.com/analytics.js', 'ga');
+
+        ga('create', 'UA-103159152-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="gh-header-title">NAT</h1>
+    <div class="gh-header-meta">
+        <a href="https://github.com/qc1iu">qc1iu</a> published this page
+        <time>Aug 17, 2017</time>&middot;
+        Last modified:
+        <time>Aug 17, 2017</time>
+    </div>
+    <div class="markdown-body">
+        <p>
+            IPv4协议目前还是使用最普遍的网络层协议。不过因为IPv4使用了32位的地址，2<sup>32</sup>个地址目前已经不够用了。地址的分配与管理工作是一个非盈利组织ICANN(Internet
+            Corporation for Assigned names and
+            Numbers)。这个组织我感觉不靠谱，浪费了不少IP地址。原因是因特网诞生在美国，最初是美国的几个大学在使用，所以到现在为止，美国的几个大学都有着用不完的IP地址。
+        </p>
+        <p>
+            围绕IP的很多技术，本质上都跟IP地址有关。早起的IP地址的分配采用分类的方法，根据包含的地址数量不同将网络分为了A类，B类，C类等等。这显然是一种粗粒度的划分方法，导致IP浪费严重,上世纪70年代就不用了。子网(subnet)概念提出后，通过使用子网掩码(netmask)使得网络的划分更加灵活。CIDR的提出主要是为了解决路由效率问题，我感觉CIDR又是利用中间层的思想，比如选举，如果选民特别多，听取每个人的意见是一件费时费力的事。于是可以将选民分根据一定的规则分类，每一类选一个代表，直接跟人民代表交流就降低了成本:)。所以CIDR跟IP利用率没什么关系。
+        </p>
+
+        <p>
+            提高IP利用率并没有真正的增加IP地址的数量。如果有更多的人想要接入互联网，但是IP地址不够用，怎么办?
+        </p>
+
+        <h2>SNAT</h2>
+        <p>
+            虽然IPv6可以通过64位地址解决这个问题，但是从IPv4向IPv6过度是一个漫长的过程。一种更简单粗暴的方法就是让多台机器可以利用同一个IP接入互联网。简单来说，配备<a
+                href="https://en.wikipedia.org/wiki/Network_address_translation">NAT</a><i class="icon-external"></i>功能的router是一个特殊的router。一般的router只会对收到的IP包进行查表，然后转发。但是NAT除此之外还会对IP包进行修改，将IP包的源地址从私有IP换成公网IP。这样以来，内网的主机就通过router接入了互联网。
+        </p>
+        <p>
+            内网主机如何收到外网的包?
+        </p>
+        <h2>UN-SNAT</h2>
+        <p>
+            这里可以简单理解为NAT具有链接管理功能，它会判断出收到的IP包是否是一条已经建立的TCP或者UDP链接。并且，NAT在将源地址替换为公网IP时，并没有将源地址丢弃，而是记录在一个表里面。这样当NAT这个代理人收到一个回应的IP包时，会根据链接判断出该IP包是发给内网哪一台机器，自动的将目的地址改为之前保存的源地址。
+        </p>
+
+        <p>
+            与SNAT类似，<a href="https://en.wikipedia.org/wiki/Network_address_translation#DNAT">DNAT</a><i
+                class="icon-external"></i>用来修改流入内网的IP包的目的地址，这样可以让外网的主机通过访问内网网关进而访问到内网主机。
+        </p>
+
+        <h2>实践</h2>
+        <p>
+            Linux可以通过<a href="https://en.wikipedia.org/wiki/Iptables">iptables</a><i class="icon-external"></i>配置一台主机的NAT。另外需要机器<a
+                href="https://askubuntu.com/questions/227369/how-can-i-set-my-linux-box-as-a-router-to-forward-ip-packets">开启IP转发功能</a><i
+                class="icon-external"></i>。iptables是Linux自带的firewall，初看iptables三表五列好复杂，不过对于配置NAT，我们关注PREROUTING和POSTROUTING就可以了。
+        </p>
+        <pre>
+      _____                                     _____
+     /     \                                   /     \
+   PREROUTING -->[Routing ]----------------->POSTROUTING----->
+     \D-NAT/     [Decision]                    \S-NAT/
+                     |                            ^
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     |                            |
+                     --------> Local Process ------
+    </pre>
+        <p>上图出自<a href="http://www.netfilter.org/documentation/HOWTO/.html">NAT-HOWTO-5</a><i class="icon-external"></i>
+        </p>
+        <p>
+            中规中矩的配置一台具有NAT功能的网关并不复杂，不过在内网里面搭建一个NAT服务器稍稍有点不同。
+        </p>
+
+        <pre>
+                            INTERNET
+                                |
+                                |
+                                |
+                                |(eth1: IP A)
+                        +-------------+
+                        |   Gateway   |(eth0: 192.168.81.1)
+                        +-------------+
+                            /       \
+                           /         \
+                          /           \
+                         /             \
+                        /               \
+                       /                 \
+            +----------+                 +-----------+
+            |   My-NAT |-----------------|  Client   |
+            +----------+                 +-----------+
+            (eth0:192.168.81.27)         (eth0:192.168.81.59)
+        </pre>
+        <p>
+            上图表示了一个简单的内网环境，内部机器都通过网关的公网IP访问INTERNET，显然网关上配置了NAT。现在如果我们想让Client(192.168.81.59)将My-NAT(192.168.81.27)作为网关进行上网，我们开启My-NAT这台机器的转发功能就可以了
+        </p>
+        <p>
+            么？
+        </p>
+        <p>
+            这里的一个问题就是<a href="https://en.wikipedia.org/wiki/Internet_Control_Message_Protocol#Redirect">ICMP
+            Redirect</a><i class="icon-external"></i>。可以观察到Client将My-NAT作为网关访问INTERNET，实际上My-NAT还要通过Gateway，所以这是一条远路。My-NAT这台机器会在收到Client的第一个IP包的时候就发现它走了一条远路，于是告诉Client有一条近路，直接访问Gateway就可以。于是Client之后包都直接发给Gateway了。ICMP
+            Redirect默认是开启的，不过在一些情况下会导致奇怪的问题，因此可以根据需要关闭。方法可以参考<a
+                href="https://www.agwa.name/blog/post/icmp_redirect_attacks_in_the_wild">ICMP Redirect Attacks in the
+            Wild</a><i class="icon-external"></i>。
+        </p>
+
+        <p>
+            假设Client已经被网管加入了黑名单，现在Client的IP已经不能用来上网了，这时我们就可以配置My-NAT的SNAT功能，让My-NAT代替Client发起访问。这样在Gateway看来只是My-NAT在上网，My-NAT收到相应链接的回应后会通过UN-SNAT还原IP包并回复给Client。这里有一篇非常非常好的文章<a
+                href="https://lists.netfilter.org/pipermail/netfilter/2002-July/036806.html">I wrote a detailed
+            explanation of how DNAT works</a><i class="icon-external"></i>，详细的描述了使用NAT的一些问题，其中最后一段写了描述了在内网使用NAT的问题和解决方案。
+        </p>
+
+        <h2>TODO</h2>
+        <p>
+            内网的管制有很多方法，比如某公司将IP地址与MAC地址绑定。如果这样的话，上面方案的Client就没法收到My-NAT回应给它的包，原因可能是内网交换机的过滤规则。不过<a
+                href="https://en.wikipedia.org/wiki/TUN/TAP">TUN/TAP</a>确实是一个好东西。很多限制都可以通过建立隧道解决。
+        </p>
+
+        <p>如果通过隧道技术将My-NAT与外网一台主机建立链接，那么...:)</p>
+
+
+        <h3>总结</h3>
+        <p>
+            关于IPv6不普及的原因可以参考这篇文章<a
+                href="http://blog.silver-peak.com/4-reasons-why-ipv6-has-not-taken-off-and-3-why-it-should">4-reasons-why-ipv6-has-not-taken-off-and-3-why-it-should</a><i
+                class="icon-external"></i>
+        </p>
+        <p>
+            关于NAT技术的优点和缺点,简单说优点有二：一是解决了IPv4地址紧张的问题，二是实现了内网。缺点一堆，不过总结起来缺点有二：一是实现了内网，二是工作在传输层之下却依赖传输层。NAT实现内网满足了一定安全上的需求，但同时打破了IP的模型架构，IP的设计是说任意一台接入互联网的主机都有一个独一无二的IP地址。再者它打破了网络层端到端访问的模型，端到端访问原本是指互联网上的任意主机可以在任意时间向任何其他主机收发包。对NAT感兴趣可直接看<a
+                href="https://tools.ietf.org/html/rfc2993">RFC2993</a><i class="icon-external"></i>
+        </p>
+    </div>
+</div>
+
+</body>
+</html>
