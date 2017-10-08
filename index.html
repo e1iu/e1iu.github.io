@@ -3,18 +3,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-
-    <!-- Bootstrap core CSS -->
-    <link href="./css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap theme -->
-    <link href="./css/bootstrap-theme.min.css" rel="stylesheet">
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <link href="./css/ie10-viewport-bug-workaround.css" rel="stylesheet">
-
     <link rel="shortcut icon" type="image/x-icon" href="./Q.ico"/>
     <title>Qingchuan Liu</title>
-
     <script>
         (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
             (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
@@ -26,110 +16,52 @@
 
     </script>
 </head>
+<style>
+    hr {
+        height: 0.25em;
+        padding: 0;
+        margin: 24px 0;
+        background-color: #e1e4e8;
+        border: 0
+    }
+    a {
+        text-decoration-line: none;
+        cursor: crosshair;
+        border-bottom: 1px dashed orange;
+        color: #0f0f0f;
+    }
+
+    a:hover {
+        background-color: LightGrey;
+    }
+</style>
 
 <body>
+<table align="center">
+    <tr>
+        <td><a target="_blank" href = "./about.html"><button>About Me</button></a></td>
+        <td><a target="_blank" href = "https://github.com/qc1iu"><button>GitHub</button></a></td>
+        <td><a target="_blank" href = "https://www.douban.com/people/qc1iu/"> <button>douban</button></a></td>
+        <td><a target="_blank" href = "./links.html"> <button>Links</button></a></td>
+    </tr>
+</table>
+<hr>
+<table style="font-family:'monospace'; font-size: 15px" align="center">
+    <tr><td><a target="_blank" href="./2017/09/learn-programming.html">如何学习编程</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/08/ssh.html">用SSH搭梯子</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/08/nat.html">NAT</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/07/ip.html">IP协议与网络层</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/07/tcp.html">TCP与三次握手</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/06/about-classical.html">关于古典风格</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/04/cdls.html">cd后自动ls</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/04/about-internship.html">关于实习</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/04/clang-args.html">利用函数参数地址寻址的问题</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/02/pic-obf-for-arm.html">PIC代码之移位</a></td></tr>
+    <tr><td><a target="_blank" href="./2017/01/how-to-code.html">写代码的正确姿势</a></td></tr>
+    <tr><td><a target="_blank" href="./2016/03/hello-world.html">Hello World</a></td></tr>
 
-<!-- Fixed navbar -->
-<nav class="navbar navbar-inverse navbar-fixed-top">
-    <div class="container">
-        <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
-                    aria-expanded="false" aria-controls="navbar">
-                <span class="sr-only">Toggle navigation</span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">404 Not Found</a>
-        </div>
-        <div id="navbar" class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li class="active"><a href="http://qc1iu.org">Home</a></li>
-                <li><a target="_blank" href="./about.html">About me</a></li>
-                <li><a target="_blank" href="https://github.com/qc1iu">GitHub</a></li>
-                <li><a target="_blank" href="http://www.douban.com/people/qc1iu/">douban</a></li>
-                <li><a target="_blank" href="./links.html">Links</a></li>
-                <!--<li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Dropdown <span class="caret"></span></a>
-                    <ul class="dropdown-menu">
-                      <li><a href="#">Action</a></li>
-                      <li><a href="#">Another action</a></li>
-                      <li><a href="#">Something else here</a></li>
-                      <li role="separator" class="divider"></li>
-                      <li class="dropdown-header">Nav header</li>
-                      <li><a href="#">Separated link</a></li>
-                      <li><a href="#">One more separated link</a></li>
-                    </ul>
-                </li>-->
-            </ul>
-        </div><!--/.nav-collapse -->
-    </div>
-</nav>
-<!--<div class="row" style="padding-top: 70px">-->
-<div class="" style="padding-top: 70px">
-    <div class="container center-block">
-        <div class="col-md-2"></div>
-        <div class="col-md-8 col-sm-12">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h3 class="panel-title">Blog</h3>
-                </div>
-                <ul class="list-group">
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/09/learn-programming.html">如何学习编程</a>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/08/ssh.html">用SSH搭梯子</a>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/08/nat.html">NAT</a>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/07/ip.html">IP协议与网络层</a>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/07/tcp.html">TCP与三次握手</a>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/06/about-classical.html">关于古典风格</a>
-                    <li class="list-group-item title">
-                        <a target="_blank" href="./2017/04/cdls.html">cd后自动ls</a>
-                    </li>
-                    <li class="list-group-item title">
-                        <a target="_blank" href="./2017/04/about-internship.html">关于实习</a>
-                    </li>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/04/clang-args.html">利用函数参数地址寻址的问题</a>
-                    </li>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2017/02/pic-obf-for-arm.html">PIC代码之移位</a>
-                    </li>
-                    <li class="list-group-item title">
-                        <a target="_blank" href="./2017/01/how-to-code.html">写代码的正确姿势</a>
-                    </li>
-                    <li class="list-group-item title">
-                        <a target="_blank"
-                           href="./2016/03/hello-world.html">Hello World</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="col-md-2">
-        </div>
-    </div>
-</div>
-<!-- Bootstrap core JavaScript
-     ================================================== -->
-<!-- Placed at the end of the document so the pages load faster -->
-<script src="./js/jquery.min.js"></script>
-<script>window.jQuery || document.write('<script src="./js/jquery.min.js"><\/script>')</script>
-<script src="./js/bootstrap.min.js"></script>
-<script src="./js/docs.min.js"></script>
-<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-<script src="./js/ie10-viewport-bug-workaround.js"></script>
+</table>
+
 </body>
 <hr>
 <!--<center>我是有底线的</center>-->
