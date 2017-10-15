@@ -1,0 +1,88 @@
+<html>
+<head>
+
+    <title>C语言陷阱</title>
+    <meta name="keywords" content="My Blog, Spider Bitch!"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="../../css/mystyle.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+    <link rel="shortcut icon" type="image/x-icon" href="/Q.ico"/>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-103159152-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="gh-header-title">C语言陷阱</h1>
+    <div class="gh-header-meta">
+        <a href="https://github.com/qc1iu">qc1iu</a> published this page
+        <time>Oct 15, 2017</time>&middot;
+        Last modified:
+        <time>Oct 15, 2017</time>
+    </div>
+
+
+    <div class="markdown-body">
+        最近一直做C编译器相关的开发，感觉该总结一下。以前一直以为对C已经足够熟悉了，结果被它奇葩的语法树震惊了。碰巧最近心血来潮，想把一个GNU的僵尸项目<a href="http://jamvm.sourceforge.net/">jamvm</a>救活改造一下，又发现了GCC的一些奇葩C语言扩展。
+        <h2>声明</h2>
+        <p>
+            C语言的声明足够奇怪，以至于<a href="https://book.douban.com/subject/2377310/">丑鱼书</a>用了一章来解释这个问题。对于一般的变量声明，C语言采用的语法一般是<code>T var</code>的形式，T表示变量的类型，var表示变量的名字。但对于数组的声明，如果要声明一个大小为10的int数组a，C语言需要
+        </p>
+        <pre>int a[10]</pre>
+        <p>而不是</p>
+        <pre>int[10] a</pre>
+        <p>而后许多其他的语言采用的往往是类似后者的方式，比如Java，C#，Go等等。</p>
+        <p>函数指针的声明同样的问题。比如这样的一个函数</p>
+        <pre>
+int foo(int a, int b)
+{
+    return a + b;
+}</pre>
+        <p>它的类型可以表示为<code>int ()(int, int)</code>, 其实一定有人发现了，如果对foo函数做前向引用的声明，我们会这么写：</p>
+        <pre>int foo(int, int);</pre>
+        <p>而不是</p>
+        <pre>int ()(int, int) foo;</pre>
+        <p>函数指针也是同样的问题，对于foo函数的指针，类型可以表示为<code>int (*)(int, int)</code>，但声明函数指针时，我们只能</p>
+        <pre>int (*f)(int, int)</pre>
+        <p>即声明了一个变量f，类型为指针类型，指向目标的类型为<code>int ()(int, int)</code>。如果想用<code>T var</code>的形式声明函数指针，只能曲线救国，利用typedef。</p>
+        <p>C语言之所以把声明形式搞得这么复杂，原因或许是为了追求变量的定义和使用尽量写法上保持一致。怎么样，是不是很奇怪？本身完全不一样的两个概念非要写的一样有何用？除了引入复杂性，比如这个声明是啥意思?</p>
+        <pre>char* const *(*next)()</pre>
+
+
+        <h2>左值</h2>
+        <p>先说结论。C99标准明确说明了Cast不能作为左值，所以现在的编译器（gcc4.x或者clang3.x）遇到这种情况都会complain。但是老版本gcc居然有一个扩展，名曰casts-as-lvalue。</p>
+        <p>
+            <a href="https://en.wikipedia.org/wiki/Value_(computer_science)">左值</a>可以简单理解为允许被赋值的值，可以被放在赋值号(=)左边的值。那什么样的值可以放在赋值号左边？权威的解答需要参考<a href="https://www.iso.org/standard/29237.html">ISO/IEC 9899:1999</a>。为了方便我用CIL对左值的定义举例
+        </p>
+        <pre>
+lval =
+     | Mem of exp
+     | Var of varinfo</pre>
+        <p>可以看到左值如果是一个表达式，那么一定只一个访存操作。比如<code>*(ptr+1) = 1</code>，显然这里的ptr是一个指针类型。在编译jamvm1.0版本源码的时候，出现了大量的lvalue required as left operand of assignment错误。这里错误大部分都长的这个样<code>*((long long*)ptr)++ = 1</code>。我根据代码上下文理解，它是想根据强制类型转换后的类型进行指针自增操作。不过经过我调研，发现现在的编译器已经不支持一行代码实现类似这样语义的操作了。如果想要编译含有这样语句的C代码，可以尝试使用gcc3.3.6。gcc3.3.6支持cast-as-lvalue扩展，但是本身并不含有cast-as-lvalue的代码。</p>
+        <h2>undefined behaviour</h2>
+        <p>
+            只举个例子。比如<code>*p++ = p[-1]</code>，赋值号两边的计算顺序不同编译器是不同的，C标准对它没有做严格的要求。所以这种写法在开发中一定要避免，clang默认会抛一个warning，gcc不加<code>-Wall</code>参数不会有任何提示。
+        </p>
+        <h2>总结</h2>
+<ol>
+    <li>不要为了少写一两行代码而是用一些非标准的extenstion或者trick，得不偿失。</li>
+    <li>Treat all warning as error ！</li>
+</ol>
+        <p>对JVM感兴趣的话，jamvm1.0的确是个不错的起点，不到7000行的C，实现了一个java虚拟机该有的几乎所有功能。问题是现在的主流编译器都无法编译它了。<a href="https://github.com/qc1iu/neojam">neojam</a>是对jamvm1.0代码修改后可以用gcc4.x编译的版本，链接先放在这，相关文档补全后会public。</p>
+    </div>
+</div>
+
+</body>
+</html>
