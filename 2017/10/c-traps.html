@@ -30,7 +30,7 @@
         <a href="https://github.com/qc1iu">qc1iu</a> published this page
         <time>Oct 15, 2017</time>&middot;
         Last modified:
-        <time>Oct 15, 2017</time>
+        <time>Oct 18, 2017</time>
     </div>
 
 
@@ -43,8 +43,8 @@
         <pre>int a[10]</pre>
         <p>而不是</p>
         <pre>int[10] a</pre>
-        <p>而后许多其他的语言采用的往往是类似后者的方式，比如Java，C#，Go等等。</p>
-        <p>函数指针的声明同样的问题。比如这样的一个函数</p>
+        <p>而许多其他的语言采用的往往是类似后者的方式，比如Java，C#，Go等等。</p>
+        <p>函数的声明同样的问题。比如这样的一个函数</p>
         <pre>
 int foo(int a, int b)
 {
@@ -57,7 +57,7 @@ int foo(int a, int b)
         <p>函数指针也是同样的问题，对于foo函数的指针，类型可以表示为<code>int (*)(int, int)</code>，但声明函数指针时，我们只能</p>
         <pre>int (*f)(int, int)</pre>
         <p>即声明了一个变量f，类型为指针类型，指向目标的类型为<code>int ()(int, int)</code>。如果想用<code>T var</code>的形式声明函数指针，只能曲线救国，利用typedef。</p>
-        <p>C语言之所以把声明形式搞得这么复杂，原因或许是为了追求变量的定义和使用尽量写法上保持一致。怎么样，是不是很奇怪？本身完全不一样的两个概念非要写的一样有何用？除了引入复杂性，比如这个声明是啥意思?</p>
+        <p>C语言之所以把声明形式搞得这么复杂，原因或许是为了追求变量的定义和使用尽量写法上保持一致。怎么样，是不是很奇怪？除了引入复杂性，本身完全不一样的两个概念非要写的一样有何用？比如这个声明是啥意思?</p>
         <pre>char* const *(*next)()</pre>
 
 
