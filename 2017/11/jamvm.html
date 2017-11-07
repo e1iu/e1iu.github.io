@@ -1,0 +1,57 @@
+<html>
+<head>
+
+    <title>探索JamVM</title>
+    <meta name="keywords" content="My Blog, Spider Bitch!"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="../../css/mystyle.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="alternate" type="application/atom+xml" href="/atom.xml" title="Atom feed">
+    <link rel="shortcut icon" type="image/x-icon" href="/Q.ico"/>
+    <script>
+        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+        })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+        ga('create', 'UA-103159152-1', 'auto');
+        ga('send', 'pageview');
+
+    </script>
+</head>
+
+<body>
+<div class="container">
+    <h1 class="gh-header-title">探索JamVM</h1>
+    <div class="gh-header-meta">
+        <a href="https://github.com/qc1iu">qc1iu</a> published this page
+        <time>Nov 7, 2017</time>&middot;
+        Last modified:<time>Nov 7, 2017</time>
+    </div>
+
+
+    <div class="markdown-body">
+        <p>之前在<a href="../10/c-traps.html">C语言陷阱</a>最后提到了JamVm，它是一个十分短小的java虚拟机，对于研究java虚拟机的实现是一个很好的起点。</p>
+        <p>JamVm很早以前就已经不在维护了，具体可以看它的<a href="http://jamvm.sourceforge.net/">官网</a>介绍。源码下载地址在<a href="https://sourceforge.net/projects/jamvm/files/jamvm/">sourceforge</a>上。我个人感觉研究jam从它最老的的版本1.0.0下手是个比较好的选择。虽然1.0.0对native的支持不全，而且只支持java4，但是毕竟代码量小（6000+ C），而1.5.4就已经近2W的C了。</p>
+        <p>2w的C代码其实并没什么，只是对于研究java虚拟机实现来说，没必要。无非是多支持了几条新的虚拟机指令，多支持了一些native，有些模块甚至为了效率牺牲了可读性等等。很多时候代码的复杂度和代码量往往不是线性关系的，而是指数关系不是么？</p>
+
+        <h2>部署JamVM1.0.0</h2>
+        <p>这个过程中会遇到一些问题，各种问题会导致探索体验变差，其中的几个问题我在之前的文章中提到过，现在系统的总结一下，想要自己折腾的可以忽略后面的全部内容。</p>
+        <p>下载的源码中包括jam的源码，以及它所需要的classpath0.0.4的源码。这个classpath就是jre，当然现在也已经停止开发了，详情可以参考<a href="http://www.gnu.org/software/classpath/">GNU Classpath</a>。</p>
+        <p>推荐直接在32bit的系统上build，我用的是ubuntu12.04-32bit。</p>
+        <h3>编译classpath0.0.4</h3>
+        <p>classpath用的还是GNU编译3步走，configure，make，make install。不过configure的时候很可能会出错，说找不到javac。根本原因是configure文件需要gcj或者jikes，但是这两个项目现在都die了。一种解决方案是，ubuntu源里面有gcj4.8，先装一个gcj4.8，configure没有问题，但是编译肯定还是一堆的错误。原因是gcj4.8默认是java5，而classpath的源码是java4，所以手动改一下生成的lib/Makefile，用gcj的-fsource和-ftarget参数将版本指定为java1.4就行了。</p>
+        <p>不想装gcj的可以装openjdk，然后做个软连接，用openjdk的javac冒充gcj。也需要再修改Makefile，原理相同。</p>
+        <p>当然编译中可能还会有其他问题。</p>
+        <h3>编译jam</h3>
+        <p>如果编译器支持cast-as-lvalue扩展，那么编译jam还是很容易的。不过很遗憾，gcc4.X这个扩展已经没有了。由于JamVM1.0.0是2003年开发的，所以代码里面充斥着将cast-as-lvalue。另外代码里面还存在undefined behavior，这个在<a href="../10/c-traps.html">C语言陷阱</a>里面提到过，所以这个JamVM我直接修改了一个<a href="https://github.com/qc1iu/neojam">neojam</a>，不存在cast-as-lvalue和其他的一些gcc4.X的编译错误，以及我已经发现的undefined behavior。</p>
+
+        <p>如果还有问题请提issue。</p>
+    </div>
+</div>
+
+</body>
+</html>
