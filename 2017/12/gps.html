@@ -1,0 +1,114 @@
+<html>
+<head>
+
+    <title>G.P.S:把大象放冰箱</title>
+    <meta name="keywords" content="My Blog, Spider Bitch!"/>
+
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+    <link href="../../css/mystyle.css" rel="stylesheet" type="text/css"/>
+
+    <link rel="shortcut icon" type="image/x-icon" href="/Q.ico"/>
+
+</head>
+
+<body>
+<div class="container">
+    <h1 class="gh-header-title">G.P.S:把大象放冰箱</h1>
+    <div class="gh-header-meta">
+        <a href="https://github.com/qc1iu">qc1iu</a> published this page
+        <time>Dec 4, 2017</time>&middot;
+        Last modified:<time>Dec 4, 2017</time>
+    </div>
+
+
+    <div class="markdown-body">
+        <p>自从dota2更新了之后，感觉之前创意工坊里的AI都变傻了，AI作者也没有动力及时更新，这里建议作者出个VIP服务，免费的还是不靠谱。碰巧这几天在看皮特诺文书，也在尝试换个角度去欣赏计算机科学，里面介绍的<a href="https://en.wikipedia.org/wiki/General_Problem_Solver">G.P.S(The General Problem Solver)</a>我用OCaml实现了一下，小有感触。</p>
+        <h2>问题描述</h2>
+        <p>先用诺文大神书中的例子：</p>
+        <blockquote>
+            I want to take my son to nursery school. What's the difference
+            between what I have and what I want? One of distance. What
+            changes distance? My automobile. My automobile won't work.
+            What is needed to make it work? A new battery. What has new
+            batteries? An auto repair shop. I want the repair shop to put in a
+            new battery; but the shop doesn't know I need one. What is the
+            difficulty? One of communication. What allows communication?
+            A telephone. . . and so on.
+        </blockquote>
+        <p>这里的解决问题就像玩侦探游戏一样，这里为了少打几个字，换一个类似但是推理过程更简单的问题：<b>把大象装冰箱需几步</b>.</p>
+        <p>G.P.S的通用性体现在将解决问题的算法与问题本身的定义分开。只要用一种合理的方式描述问题，就可以让算法不变。尝试着用<b>状态</b>和<b>操作</b>来描述问题。</p>
+        <p>操作会导致当前状态的改变，会在当前状态集合上面删除某些状态或添加某些状态。简单说，你现在的状态是"很困"，然后进行的一项操作"喝咖啡"，于是"很困"这个状态被这个操作删掉了，但同时这个操作加入了新的状态“有精神”:P当然，每种操作都有前提条件，只有在某些状态下，才能进行某项操作。也就是说，如果没有“很困”这个状态，就不能进行“喝咖啡”这个操作。</p>
+        <p>大象装冰箱如何用状态和操作描述呢？诺文大神那个送小孩去学校的例子太坎坷：想把小孩送学校，发现需要解决距离问题。如何解决距离问题？用电动车。电动车没电，如何让它有电？一块新电池。从哪弄新电池？商店。商店不知道我的需求怎么办？沟通。如何沟通？一台电话……</p>
+        <p>想让大象在冰箱里，发现需要一只大象，一台冰箱，冰箱门要开着。如何让冰箱门开着？打开冰箱门。如何让大象在冰箱里？把大象放进去，然后关上冰箱门。问题解决。详细的定义如下：</p>
+<pre>
+状态：
+    大象在冰箱里
+    冰箱门开着
+    冰箱门关着
+    有一只大象
+    有一台冰箱
+操作：
+    打开冰箱门
+       前提状态：有一台冰箱 and 冰箱门关着
+       执行后添加状态： 冰箱门开着
+       执行后删除状态： 冰箱门关着
+    关闭冰箱门
+       前提状态：有一台冰箱 and 冰箱门开着
+       执行后添加状态： 冰箱门关着
+       执行后删除状态： 冰箱门开着
+    把大象放冰箱里：
+       前提状态：有一台冰箱 and 冰箱门开着 and 有一只大象
+       执行后添加状态： 大象在冰箱
+       执行后删除状态： 有一只大象
+</pre>
+        <p>G.P.S只需要给一个初始状态和目标状态和一个操作集合，就会按上面的推理过程，努力的到达目标状态。在这个例子里面，可以给一个初始状态(冰箱门关着,有一只大象,有一台冰箱), 目标状态定为(大象在冰箱里，冰箱门关着)。实现后的结果为：</p>
+<pre>
+Goal:ElephantInRefrigerator
+Consider: put the elephant into the inrefrigerator
+ Goal:HaveElephant
+ Goal:HaveInRefrigerator
+ Goal:DoorOpen
+ Consider: OpenDoor
+  Goal:HaveInRefrigerator
+  Goal:DoorClose
+ Action: OpenDoor
+Action: put the elephant into the inrefrigerator
+Goal:DoorClose
+Consider: CloseDoor
+ Goal:HaveInRefrigerator
+ Goal:DoorOpen
+Action: CloseDoor
+</pre>
+        <p>可以看到3个Action，把冰箱门打开，把大象放进去，把冰箱门关上:P<a href="https://github.com/qc1iu/paip">demo源码</a></p>
+
+        <h2>G.P.S的缺点</h2>
+        <h4>问题描述</h4>
+        <p>个人认为这是由于程序语言的表达能力受限所导致的。比如程序语言无法表达一段时间，无法表达可能性等等。比如大象进冰箱这个例子，如果把问题换一种表述，比如：</p>
+        <li>第一步：抓一只猫，让猫在强烈的政治攻击下承认自己是大象。</li>
+        <li>第二步：公布计划：生产一种能装进大象的冰箱，动员国民捐款。实际上并不生产。</li>
+        <li>第三步：收买证人，证明大象已经被装进冰箱里。</li>
+        <li>第四步：利用媒体优势反复强调“猫是大象的祖先”这一理论，以防后患。</li>
+        <p></p>
+        <p>参考了<a href="https://www.zhihu.com/question/21362224">这个</a>知乎答案找到的这个奇葩步骤。</p>
+        <p>怎么定义状态和操作？</p>
+        <h4>有些问题本身就是无解的</h4>
+        <p>NP问题是一种情况。再就是对一些加密函数求逆也会让solver超时从而放弃求解。这个我在之前做符号执行的时候是碰到过的。</p>
+        <h2>炉石传说</h2>
+        <p>用G.P.S的思路能否设计炉石的AI？可以尝试着定义状态和操作。这里不难想到，状态的定义受到了太多维度的影响。即使是一个只攻不守的AI，在出牌时也要考虑到当前水晶数量，当前手中卡牌的数量和种类，如果高级一点的AI的话还要考虑到牌库中牌的情况。而且这里的问题与送孩子上学有个本质区别。大象进冰箱的例子中会有一个操作使得状态直接变为“大象在冰箱里”。但是炉石面临的问题的不是（当然一般也不可能）一招秒杀对手，而是在本回合给出一个最优解。而一个已知的常识是：局部最优解未必会使得全局解最优。如果可以让AI的目的单纯一点，不要以战胜对手为目的，而以抢血为目的或许能让问题简单一些。目前天梯的上一些脚本一般都是抢血脚本，不过这样的话也没必要用G.P.S去做，所以这种脚本的行为被称为“无脑打脸”。</p>
+        <h2>结论</h2>
+        <p>并不通用。</p>
+        <p>诺文大神原话：</p>
+        <blockquote>
+            In fact, it is not a very general problem solver at all. It is general in the sense that the algorithm
+            is not tied to a particular domain; we can change domain by changing the operators.
+            But GPS fails to be general in that it can't solve many interesting problems. It is
+            confined to small tricks and games.
+        </blockquote>
+        <p>有一个观察我也发现了，前文也提到过，就是G.P.S的通用性体现在算法与问题描述分离。将G.P.S作为一个好的架构设计案例思索一下还是很有意思的。</p>
+    </div>
+</div>
+
+</body>
+</html>
